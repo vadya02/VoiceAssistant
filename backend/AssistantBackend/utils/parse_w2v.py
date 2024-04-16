@@ -3,7 +3,7 @@ import re
 
 import nltk
 import psycopg2
-from AssistantBack.settings import (
+from AssistantBackend.settings import (
     DB_NAME,
     HOST,
     NLTK_RESOURCES,
@@ -30,14 +30,6 @@ morph = MorphAnalyzer()
 
 def ParseKeywords(text):
     try:
-        # Параметры подключения к базе данных
-        # dbname = os.environ.get('DB_NAME')
-        # print(dbname)
-        # user = os.environ.get('USER')
-        # print(user)
-        # password = os.environ.get('PASSWORD')
-        # host = os.environ.get('HOST')
-        # port = os.environ.get('PORT')
 
         dbname = DB_NAME
         print(dbname)

@@ -13,7 +13,16 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from datetime import timedelta
 
+# from scipy.linalg import get_blas_funcs, triu
+# try:
+#     from numpy import triu
+# except ImportError:
+#     from scipy.linalg import get_blas_funcs, triu
+import gensim
+import nltk
 from dotenv import load_dotenv
+from nltk.corpus import stopwords
+from numpy import triu
 
 load_dotenv()
 # Quick-start development settings - unsuitable for production
@@ -185,3 +194,49 @@ USER = os.getenv('USER')
 PASSWORD = os.getenv('PASSWORD')
 HOST = os.getenv('HOST')
 PORT = os.getenv('PORT')
+
+
+class Word2VecModel:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)
+            cls._instance.load_model()
+        return cls._instance
+
+    def load_model(self):
+        current_directory = os.path.dirname(os.path.abspath(__file__))
+    
+    # Составляем путь к файлу model.bin
+        model_path = os.path.join(current_directory, 'model.bin')
+        # model_path = 'C:/Users/ehiri/Desktop/apache-front/VoiceAssistant/assistant-back/AssistantBack/AssistantBack/model.bin'  # Путь к вашей модели
+        self.model = gensim.models.KeyedVectors.load_word2vec_format(model_path, binary=True)
+
+WORD2VEC_MODEL = Word2VecModel()
+
+
+
+
+
+class NLTKResources:
+    _instance = None
+    # stop_words = set(stopwords.words('russian'))
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)
+            cls._instance.load_resources()
+        return cls._instance
+
+    def load_resources(self):
+        # Загрузка стоп-слов
+        nltk.download('stopwords')
+        nltk.download('punkt')
+        nltk.download('wordnet')
+        self.stop_words = set(stopwords.words('russian'))
+        # Здесь можно добавить и другие ресурсы, например, POS-теггеры и т.д.
+
+        # После загрузки ресурсов вы можете выполнить другие операции, если необходимо
+
+# Создаем экземпляр класса
+NLTK_RESOURCES = NLTKResources()

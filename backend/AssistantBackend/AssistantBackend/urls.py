@@ -14,9 +14,24 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from AssistantBackendApp.views import (
+    AudioUploadViewMp3,
+    AudioUploadViewMp3V2,
+    AudioUploadViewText,
+    CurrentUserView,
+    RequestHistoryList,
+)
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
+    path('auth/', include('djoser.urls.jwt')),
+    # path('upload_audio_file_mp3/', AudioUploadViewMp3.as_view(), name='upload_audio'),
+    path('upload_audio_file_mp3/', AudioUploadViewMp3V2.as_view(), name='upload_audio'),
+    path('get_history_of_requests/', RequestHistoryList.as_view(), name='history_of_requests'),
+    path('upload_audio_text/', AudioUploadViewText.as_view(), name='history_of_requests'),
+    path('get_user_data/', CurrentUserView.as_view(), name='get_user_data'),
 ]
