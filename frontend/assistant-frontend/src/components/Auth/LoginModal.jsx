@@ -36,7 +36,7 @@ const LoginModal = (props) => {
     // new Promise((resolve) => setTimeout(resolve, 500))
     axios({
       method: 'post',
-      url: `http://127.0.0.1:8000/auth/token/login/`,
+      url: `${process.env.REACT_APP_URL_BACKEND}auth/token/login/`,
       data: UserData,
       headers: {
         'Content-Type': 'application/json',
@@ -51,8 +51,6 @@ const LoginModal = (props) => {
         localStorage.setItem('authToken', response.data.auth_token);
         store.setIsAuthenticated(true)
         navigate('/MainPage')
-        // handleModalClose();
-        // return redirect('/about')
       })
       .catch(error => {
         // Обработка ошибки

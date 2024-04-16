@@ -16,7 +16,7 @@ const StartPage = observer(({}) => {
             // Если есть токен, проверяем его на сервере
             axios({
                 method: 'GET',
-                url: 'http://localhost:8000/auth/users/me/', // Замените на ваш URL для проверки авторизации
+                url: `${process.env.REACT_APP_URL_BACKEND}auth/users/me/`, // Замените на ваш URL для проверки авторизации
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
@@ -38,7 +38,7 @@ const StartPage = observer(({}) => {
     <div style={{height: '90vh'}}>
         <Header showBack={false}/>
         <StartContent/>
-        
+        {console.log(process.env.REACT_APP_URL)}
         {/* <Test/> */}
     </div>
   )
