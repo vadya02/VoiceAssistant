@@ -26,7 +26,7 @@ const MainPage = observer((props) => {
     const [text, setText] = useState("");
     const [links, setLinks] = useState([]);
     const getHistory = () => {
-        axios.get('http://127.0.0.1:8000/get_history_of_requests/')
+        axios.get(`${process.env.REACT_APP_URL_BACKEND}get_history_of_requests/`)
         .then(response => {
             setLinks(response.data);
             console.log('история запросов: ' + response.data)
@@ -98,7 +98,7 @@ const MainPage = observer((props) => {
       formData.append('audio_file', audioBlob, 'voiceRecording.wav'); // Имя 'audio' - это ключ, используемый на сервере
       // Здесь вы можете добавить другие данные, если необходимо
       console.log(formData)
-      axios.post('http://127.0.0.1:8000/upload_audio_file_mp3/', formData, {
+      axios.post(`${process.env.REACT_APP_URL_BACKEND}upload_audio_file_mp3/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -117,7 +117,7 @@ const MainPage = observer((props) => {
        // Имя 'audio' - это ключ, используемый на сервере
       // Здесь вы можете добавить другие данные, если необходимо
       // navigate('/Dashboard')
-      axios.post('http://127.0.0.1:8000/upload_audio_text/', {
+      axios.post(`${process.env.REACT_APP_URL_BACKEND}upload_audio_text/`, {
           headers: {
               'Authorization': `Token ${localStorage.getItem('authToken')}`
           },

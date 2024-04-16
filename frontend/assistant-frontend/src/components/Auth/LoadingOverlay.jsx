@@ -1,12 +1,8 @@
 // LoadingOverlay.tsx
 import React from 'react';
-import { Modal, Spinner, Overlay } from 'react-bootstrap';
-import "./Auth.css"
-interface LoadingOverlayProps {
-    show: boolean;
-}
+import "./Auth.css";
 
-const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ show }) => {
+const LoadingOverlay = ({ show }) => {
     return (
 
         <div className={`overlay ${show ? 'active' : ''}`}>
@@ -22,14 +18,6 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ show }) => {
     )
 
     // <Modal show={show} keyboard={false} centered >
-    ///* <Modal.Body className="text-center" style={{backgroundColor: 'transparent'}}>
-
-    // <Spinner animation="border">
-
-    //  </Spinner>
-    //  <p>Loading...</p>
-
-    // </Modal.Body> */}
     //   <Spinner animation="border"></Spinner>
     // </Modal>
 }

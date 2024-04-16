@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Navbar, Nav, Button } from "react-bootstrap";
-import LoginModal from "./Auth/LoginModal";
-import { Container, Row, Col, Form, Dropdown, DropdownButton} from 'react-bootstrap';
-import ModalReg from "./Auth/ModalReg";
-import store from "../store/Store";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Logo from '../img/Logo.png'
-import { useNavigate } from 'react-router';
-import {observer} from "mobx-react";
 import axios from "axios";
-import Store from "../store/Store";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { observer } from "mobx-react";
+import React, { useEffect, useState } from 'react';
+import { Button, Dropdown, Nav, Navbar } from "react-bootstrap";
+import { useNavigate } from 'react-router';
+import Logo from '../img/Logo.png';
+import { default as Store, default as store } from "../store/Store";
+import LoginModal from "./Auth/LoginModal";
+import ModalReg from "./Auth/ModalReg";
 
 const Header = observer(({showBack}) => {
   // const { userStore } = store(); // Подставьте ваше хранилище MobX
@@ -38,7 +36,7 @@ const Header = observer(({showBack}) => {
   const getUserData = () => {
     axios({
       method: 'GET',
-      url: 'http://localhost:8000/get_user_data/', // Замените на ваш URL для проверки авторизации
+      url: `${process.env.REACT_APP_URL_BACKEND}get_user_data/`, // Замените на ваш URL для проверки авторизации
       headers: {
           Authorization: `Token ${authToken}`,
       },
@@ -59,7 +57,7 @@ const Header = observer(({showBack}) => {
             // Если есть токен, проверяем его на сервере
             axios({
                 method: 'GET',
-                url: 'http://localhost:8000/auth/users/me/', // Замените на ваш URL для проверки авторизации
+                url: `${process.env.REACT_APP_URL_BACKEND}auth/users/me/`, // Замените на ваш URL для проверки авторизации
                 headers: {
                     Authorization: `Token ${authToken}`,
                 },
