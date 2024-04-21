@@ -1,9 +1,9 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useState } from "react";
 import { Button, Col, Container, Image, Row } from "react-bootstrap";
-import "../css/style.css";
-import StartIcon from "../img/StartIcon.png";
-import BackgroundImage from "../img/background.jpg";
+import "../assets/css/style.css";
+import StartIcon from "../assets/img/StartIcon.png";
+import BackgroundImage from "../assets/img/background.jpg";
 import store from "../store/Store";
 import LoginModal from "./Auth/LoginModal";
 function StartContent({}) {
