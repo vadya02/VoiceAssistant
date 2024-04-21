@@ -1,30 +1,31 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import StartPage from './components/StartPage';
 import { Provider } from "mobx-react";
-import store from './store/Store';
-
-import MainPage from './components/MainPage/MainPage';
-import Settings from './components/Settings';
-import Dashboard from './components/Dashboard/Dashboard';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import RequireAuth from "./hoc/RequireAuth";
+import MainPage from "./pages/MainPage";
+import Settings from "./pages/Settings";
+import StartPage from "./pages/StartPage";
+import store from "./store/Store";
 function App() {
-  return (
-    <div className="App">
-      <Provider store={store}>
-        <Router>
-          {/* <Header/> */}
-          <Routes>
-          {/* <Route path='/startPage' element={<StartPage Store={AuthStore}/>}/> */}
-            <Route path='/StartPage' element={<StartPage store={store}/>}/>
-            <Route path='/MainPage' element={<MainPage store={store}/>}/>
-            <Route path='/Settings' element={<Settings store={store}/>}/>
-            <Route path='/Dashboard' element={<Dashboard store={store}/>}/>
-          </Routes>
-        
-        </Router>
-      </Provider>
-    </div>
-  );
+	return (
+		<div className="App">
+			<Provider store={store}>
+				<Routes>
+					{/* <Route path='/startPage' element={<StartPage Store={AuthStore}/>}/> */}
+					<Route path="/StartPage" element={<StartPage store={store} />} />
+					<Route
+						path="/MainPage"
+						element={
+							<RequireAuth>
+								<MainPage store={store} />
+							</RequireAuth>
+						}
+					/>
+					<Route path="/Settings" element={<Settings store={store} />} />
+				</Routes>
+			</Provider>
+		</div>
+	);
 }
 
 export default App;
