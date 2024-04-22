@@ -1,5 +1,5 @@
 # VoiceAssistant
-## клонируйте репозиторий
+## Клонируйте репозиторий
 ```
 git clone https://github.com/vadya02/VoiceAssistant.git
 
@@ -43,8 +43,8 @@ npm start
  - Убедитесь, что на вашем компьютере установлен Python (рекомендуется Python 3.7 или выше).
  - Установите пакетный менеджер pip, который обычно идет вместе с установкой Python.
  - Убедитесь, что у вас установлена БД Postgresql
- - Скачайте модель word2vec "Национальный корпус русского языка" под номером 65 с сайта http://vectors.nlpl.eu/repository/
-#Шаг 1: Перейдите в папке /backend
+ - Скачайте модель word2vec "Национальный корпус русского языка" под номером 65 с сайта http://vectors.nlpl.eu/repository/ Распакуйте скачанный архив и перенесите файл model.din в папку backend/AssistantBackend/AssistantBackend
+#Шаг 1: Перейдите в папку /backend
 
 ```bash
 cd backend
