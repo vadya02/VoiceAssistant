@@ -13,6 +13,7 @@ const ModalReg = (props) => {
 	const [checkPassword, setChechPassword] = useState(true);
 	const [checkPasswordCommon, setCheckPasswordCommon] = useState(true);
 	const [checkLogin, setCheckLogin] = useState(true);
+	const [checkValidPassword, setCheckValidPassword] = useState(true);
 	const handleSubmit = (event) => {
 		event.preventDefault(); // Предотвращаем стандартное поведение формы
 		if (!passwordRegex.test(password)) {
@@ -44,33 +45,37 @@ const ModalReg = (props) => {
 			.then((response) => {
 				// Обработка успешного ответа
 				setCheckLogin(true);
+				setCheckValidPassword(true)
 				console.log("Успешная регистрация:", response.data);
 				alert("Регистрация прошла успешно");
 				props.handleModalClose();
 			})
 			.catch((error) => {
-				// Обработка ошибки
-				console.log(error.data);
-				console.log(error.response.data); // Данные ошибки от сервера
-				console.log(error.response.status); // Код состояния
-				console.log(error.response.headers);
-				console.log(error.response.data.password[0]);
-				if (
-					error.response.data.password[0] === "This password is too common."
-				) {
-					setCheckPasswordCommon(false);
+				try {
+					// Обработка ошибки
+					console.log(error?.data);
+					console.log(error?.response?.data); // Данные ошибки от сервера
+					console.log(error?.response?.status); // Код состояния
+					console.log(error?.response?.headers);
+					console.log(error?.response?.data?.password[0]);
+					if (
+						error.response.data.password[0] === "This password is too common."
+					) {
+						setCheckPasswordCommon(false);
+					}
+					console.error(error);
+					if (
+						error.response.data.username ===
+						"A user with that username already exists."
+					) {
+						setCheckLogin(false);
+					}
 				}
-				// setUsername('')
-				// setPassword('')
-				// setConfirmPassword('')
-				// console.log(response.data);
-				console.error(error);
-				if (
-					error.response.data.username ===
-					"A user with that username already exists."
-				) {
-					setCheckLogin(false);
+				catch {
+					setCheckValidPassword(false)
+					
 				}
+				
 			});
 	};
 
@@ -202,6 +207,20 @@ const ModalReg = (props) => {
 								Зарегистрироваться
 							</Button>
 						</Form.Group>
+						{!checkValidPassword && (
+							<Form.Group
+								style={{
+									alignItems: "center",
+									display: "flex",
+									justifyContent: "center",
+									color: "red",
+								}}
+							>
+								<p>
+									произошла ошибка при регистрации
+								</p>
+							</Form.Group>
+						)}
 						<Form.Group
 							style={{
 								alignItems: "center",

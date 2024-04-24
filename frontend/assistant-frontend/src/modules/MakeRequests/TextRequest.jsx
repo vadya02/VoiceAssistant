@@ -7,7 +7,7 @@ const TextRequest = observer(() => {
 	const [text, setText] = useState("");
 
 	useEffect(() => {
-		store.getHistory();
+		// store.getHistory();
 	}, []); // Пустой массив зависимостей, чтобы useEffect сработал только один раз при монтировании компонента
 
 	const handleTextChange = (e) => {

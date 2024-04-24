@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { Button, Dropdown, Nav, Navbar } from "react-bootstrap";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 import Logo from "../assets/img/Logo.png";
 import { default as store } from "../store/Store";
 import LoginModal from "./Auth/LoginModal";
@@ -104,8 +105,12 @@ const Header = observer(({ showBack }) => {
 										></Dropdown.Toggle>
 
 										<Dropdown.Menu>
-											<Dropdown.Item onClick={() => navigate("/Settings")}>
-												Настройки
+											<Dropdown.Item>
+												<Link to={'/Settings'} className="text-black text-decoration-none">
+													Настройки
+													
+												</Link>
+												
 											</Dropdown.Item>
 											<Dropdown.Item
 												href="#/action-2"

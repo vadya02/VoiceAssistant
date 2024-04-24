@@ -7,8 +7,10 @@ import Header from "../components/Header";
 // import PcmUtil from 'pcm-util';
 import { observer } from "mobx-react";
 import HistoryOfRequests from "../modules/History/HistoryOfRequests";
+import TextRequest from "../modules/MakeRequests/TextRequest";
 import VoiceRecorderWAV from "../modules/MakeRequests/VoiceRecorderWAV";
 import store from "../store/Store";
+import transition from "../transition";
 
 var options = {
 	audioBitsPerSecond: 48000,
@@ -30,10 +32,20 @@ const MainPage = observer((props) => {
 						margin: "20px",
 						borderRadius: "20px",
 					}}
-					className="d-flex justify-content-center align-items-center pt-3"
+					className="d-flex justify-content-center align-items-center"
 				>
-					<h2 className="text-center mt-3">Введите голосовую команду</h2>
+					<h2 className="text-center mt-5">Введите голосовую команду</h2>
 					<VoiceRecorderWAV getHistory={store.getHistory} />
+				</Row>
+				<Row
+					style={{
+						backgroundColor: "#EFEFEF",
+						margin: "20px",
+						borderRadius: "20px",
+					}}
+					className="d-flex justify-content-center align-items-center"
+				>
+					<TextRequest/>
 				</Row>
 
 				<Row
@@ -58,4 +70,4 @@ const MainPage = observer((props) => {
 	);
 });
 
-export default MainPage;
+export default transition(MainPage);

@@ -116,10 +116,11 @@ const VoiceRecorderWAV = observer(({ getHistory }) => {
 	};
 
 	return (
-		<div className="p-2">
-			<Row className="d-flex justify-content-center align-items-center p-2">
+		<div className="">
+			<Row className="d-flex justify-content-center align-items-center">
 				<VoiceVisualizer
 					ref={audioRef}
+					height={180}
 					mainBarColor="black"
 					controls={recorderControls}
 				/>

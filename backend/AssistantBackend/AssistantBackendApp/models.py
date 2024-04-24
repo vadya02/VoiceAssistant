@@ -13,15 +13,18 @@ class RequestHistory(models.Model):
     text = models.CharField(max_length=200, default="")
 
 
+class Dashboards(models.Model):
+    table_name = models.CharField(max_length=200)
+    url = models.CharField(max_length=200)
+    
+
+
 class Filters(models.Model):
     filter_name = models.CharField(max_length=200)
+    fk_dashboard = models.ForeignKey(Dashboards, on_delete=models.CASCADE)
+    id_native_filter = models.CharField(max_length=100)
 
 
 class FilterValues(models.Model):
     fk_filter = models.ForeignKey(Filters, on_delete=models.CASCADE)
     filter_value = models.CharField(max_length=200)
-
-
-class Dashboards(models.Model):
-    url = models.CharField(max_length=200)
-    table_name = models.CharField(max_length=200)
