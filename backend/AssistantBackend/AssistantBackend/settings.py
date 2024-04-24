@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from datetime import timedelta
+from os import environ
 
 # from scipy.linalg import get_blas_funcs, triu
 # try:
@@ -20,16 +21,36 @@ from datetime import timedelta
 #     from scipy.linalg import get_blas_funcs, triu
 import gensim
 import nltk
+import pydub
 from dotenv import load_dotenv
 from nltk.corpus import stopwords
 from numpy import triu
 
+# Получаем путь к текущему файлу (этот файл views.py)
+current_file_path = os.path.abspath(__file__)
+
+# Получаем путь к папке views
+views_folder_path = os.path.dirname(current_file_path)
+
+# Получаем путь к корневой папке проекта (предполагая, что ваш файл .exe находится в папке executables)
+project_root_path = os.path.dirname(os.path.dirname(views_folder_path))
+exe_file_path = os.path.join(
+    project_root_path, "ffmpeg-2023-11-22-git-0008e1c5d5-essentials_build","bin", "ffmpeg.exe"
+)
+print(f'{exe_file_path}')
+# pydub.AudioSegment.converter = exe_file_path
 load_dotenv()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-$j_2!@zn(y8%_efv=(5vm1m2r8utw_3junjzw@z-co90)fiu6b"
+
+print(f'DB_NAME : {os.getenv("DB_NAME")}')
+print(f'USER : {environ.get("USER")}')
+print(f'PASSWORD : {environ.get("PASSWORD")}')
+print(f'HOST : {environ.get("HOST")}')
+print(f'SECRET_KEY : {environ.get("DJANGO_SECRET_KEY")}')
+SECRET_KEY = environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -90,15 +111,27 @@ WSGI_APPLICATION = "AssistantBackend.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-print(os.getenv("DB_NAME"))
+# print(os.getenv("DB_NAME"))
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.getenv("DB_NAME"),
+#         "USER": os.getenv("USER"),
+#         "PASSWORD": os.getenv("PASSWORD"),
+#         "HOST": os.getenv("HOST"),  # Или IP-адрес вашего PostgreSQL сервера
+#         "PORT": os.getenv("PORT"),  # Порт PostgreSQL (по умолчанию 5432)
+#     }
+# }
+
+print(os.environ.get("DB_NAME"))
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("USER"),
-        "PASSWORD": os.getenv("PASSWORD"),
-        "HOST": os.getenv("HOST"),  # Или IP-адрес вашего PostgreSQL сервера
-        "PORT": os.getenv("PORT"),  # Порт PostgreSQL (по умолчанию 5432)
+        "NAME": environ.get("DB_NAME"),
+        "USER": environ.get("USER"),
+        "PASSWORD": environ.get("PASSWORD"),
+        "HOST": environ.get("HOST"),  # Или IP-адрес вашего PostgreSQL сервера
+        "PORT": environ.get("PORT"),  # Порт PostgreSQL (по умолчанию 5432)
     }
 }
 
@@ -145,7 +178,20 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': 'activate/{uid}/{token}',
+    # 'SEND_ACTIVATION_EMAIL': True,
+    'SERIALIZERS': {},
+    'EMAIL': {
+        # 'activation': 'cars.templates.email.activation',
+        'activation': 'cars.core.email.ActivationEmail',
 
+        # 'password_reset': 'path.to.your.custom.password_reset.template.password_reset',
+        # Другие операции и шаблоны
+    },
+}
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("JWT",),
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
@@ -167,6 +213,8 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
+    os.getenv('HOST')
+
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -189,11 +237,11 @@ CORS_ALLOWED_ORIGINS = [
     # Другие допустимые источники
 ]
 
-DB_NAME = os.getenv('DB_NAME')
-USER = os.getenv('USER')
-PASSWORD = os.getenv('PASSWORD')
-HOST = os.getenv('HOST')
-PORT = os.getenv('PORT')
+DB_NAME = environ.get('DB_NAME')
+USER = environ.get('USER')
+PASSWORD = environ.get('PASSWORD')
+HOST = environ.get('HOST')
+PORT = environ.get('PORT')
 
 
 class Word2VecModel:
@@ -207,8 +255,8 @@ class Word2VecModel:
 
     def load_model(self):
         current_directory = os.path.dirname(os.path.abspath(__file__))
-    
-    # Составляем путь к файлу model.bin
+
+        # Составляем путь к файлу model.bin
         model_path = os.path.join(current_directory, 'model.bin')
         # model_path = 'C:/Users/ehiri/Desktop/apache-front/VoiceAssistant/assistant-back/AssistantBack/AssistantBack/model.bin'  # Путь к вашей модели
         self.model = gensim.models.KeyedVectors.load_word2vec_format(model_path, binary=True)

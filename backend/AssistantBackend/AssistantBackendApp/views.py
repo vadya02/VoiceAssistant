@@ -1,13 +1,17 @@
+import io
 import os
 
 import ffmpeg
+import pydub
 import speech_recognition as sr
 from pydub import AudioSegment
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from utils.parse_w2v import ParseKeywords
+from utils.Parse_w2v_text import ParseKeywords
+
+# from utils.parse_w2v import ParseKeywords
 from utils.ParseText import ParseText
 
 from AssistantBackendApp.serializers import AudioFileSerializer
@@ -29,7 +33,7 @@ exe_file_path = os.path.join(
     project_root_path, "ffmpeg-2023-11-22-git-0008e1c5d5-essentials_build", "ffmpeg.exe"
 )
 
-
+# pydub.AudioSegment.converter = exe_file_path
 class AudioUploadViewMp3(generics.ListAPIView):
     try:
         serializer_class = RequestHistorySerializer
@@ -45,7 +49,7 @@ class AudioUploadViewMp3(generics.ListAPIView):
                 if serializer.is_valid():
                     audio_file = serializer.validated_data["audio_file"]
                     print(audio_file)
-
+                    
                     audio = AudioSegment.from_mp3(audio_file)
                     print(f"audio {audio}")
                     wav_data = audio.set_frame_rate(16000).raw_data
@@ -115,6 +119,7 @@ class AudioUploadViewMp3V2(generics.ListAPIView):
         serializer_class = RequestHistorySerializer
 
         def post(self, request, *args, **kwargs):
+            print(f'Путь до ffmpeg: {exe_file_path}')
             print(self.request.user)
             print(self.request.user.is_authenticated)
 
@@ -123,18 +128,25 @@ class AudioUploadViewMp3V2(generics.ListAPIView):
             try:
                 if serializer.is_valid():
                     audio_file = serializer.validated_data["audio_file"]
-                    print(audio_file)
+                    print(type(audio_file))
+                    print("Имя файла:", audio_file.name)
+                    print("Размер файла:", audio_file.size)
 
-                    audio = AudioSegment.from_file(audio_file)
-                    audio = audio.set_channels(1)  # Установить один канал (моно)
-                    print("строка 174")
+                    audio_stream = io.BytesIO(audio_file.read())
+
+                    # Перемещаем указатель в начало потока после чтения
+                    audio_stream.seek(0)
+
+                    audio = AudioSegment.from_file(audio_stream)
+                    audio = audio.set_channels(
+                        1)  # Установить один канал (моно)
                     audio.export("audio.wav", format="wav")
-                    print("строка 176")
                     # Распознать речь
                     recognizer = sr.Recognizer()
                     with sr.AudioFile("audio.wav") as source:
                         audio_data = recognizer.record(source)
-                        text = recognizer.recognize_google(audio_data, language="ru-RU")
+                        text = recognizer.recognize_google(audio_data,
+                                                           language="ru-RU")
 
                     print(f"Распознанный текст: {text}")
 
@@ -151,20 +163,19 @@ class AudioUploadViewMp3V2(generics.ListAPIView):
                                 text=text,
                             )
                             print(url)
-                            return Response(
-                                {
-                                    "message": "File uploaded successfully.",
-                                    "url": url,
-                                    "text": text,
-                                }
-                            )
+                            return Response({
+                                "message": "File uploaded successfully.",
+                                "url": url,
+                                "text": text,
+                            })
                         else:
                             return Response({"url": "null", "text": text})
                     except Exception as e:
                         print(f"message_error: {e}")
                         return Response({"message_error": {e}})
                 else:
-                    return Response({"message": "Invalid request."}, status=400)
+                    return Response({"message": "Invalid request."},
+                                    status=400)
             except Exception as e:
                 print(f"message_error: {e}")
                 return Response({"message_error": {e}})

@@ -12,6 +12,7 @@ from AssistantBackend.settings import (
     USER,
     WORD2VEC_MODEL,
 )
+from AssistantBackendApp.models import Dashboards, Filters, FilterValues, RequestHistory
 from dotenv import load_dotenv
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -30,7 +31,6 @@ morph = MorphAnalyzer()
 
 def ParseKeywords(text):
     try:
-
         dbname = DB_NAME
         print(dbname)
         user = USER
@@ -47,47 +47,95 @@ def ParseKeywords(text):
         )
         print("Подключение к базе данных PostgreSQL установлено.")
 
+        dashboards_data = Dashboards.objects.values_list("table_name", "url")
+
+        dashboards = [
+            {"name": "дашборд", "value": item[0], "url": item[1]}
+            for item in dashboards_data
+        ]
+
+
+
+        print(dashboards)
         # Теперь вы можете выполнить запросы SQL с помощью этого соединения
 
         # Пример: создание курсора и выполнение запроса
-        cursor = connection.cursor()
-        cursor.execute("SELECT table_name, url FROM dashboards")
-        records = cursor.fetchall()
-        print("дошел до 43 строки")
-        for record in records:
-            dashboards.append({"name": "дашборд", "value": record[0], "url": record[1]})
-        print("дошел до 46 строки")
+        # cursor = connection.cursor()
+        # cursor.execute("SELECT table_name, url FROM dashboards")
+        # records = cursor.fetchall()
+
+        # for record in records:
+        #     dashboards.append({"name": "дашборд", "value": record[0], "url": record[1]})
+
+        # получене дашборда
         print(dashboards)
+
         for dashbord in dashboards:
-            cursor.execute(
-                "SELECT filters.filter_name, filters.id_native_filter  FROM dashboards, filters WHERE dashboards.table_name = %(used_dashboard)s and dashboards.id = filters.id_dashboard",
-                {"used_dashboard": dashbord["value"]},
-            )
-            print("дошел до 50 строки")
-            records = cursor.fetchall()
-            print(f"Record: {records}")
-            for record in records:
-                id_native_filter = re.sub("['(),]", "", str(record[1]))
-                record = re.sub("['(),]", "", str(record[0]))
-                cursor.execute(
-                    "SELECT filter_values.filter_value FROM dashboards,  filters, filter_values WHERE dashboards.table_name =   %(used_dashboard)s and dashboards.id = filters.id_dashboard and  filters.filter_name = %(used_filter)s and filters.id =  filter_values.id_filter",
-                    {"used_dashboard": dashbord["value"], "used_filter": record},
-                )
-                filer_values = cursor.fetchall()
+            dashboard = Dashboards.objects.get(table_name = dashbord["value"])
+            filters_by_dashboard = Filters.objects.filter(fk_dashboard = dashboard).values_list('filter_name', 'id_native_filter')
+
+            filters = [
+                {"filter_name": item[0], "id_native_filter": item[1]}
+                for item in filters_by_dashboard
+            ]
+
+            print(filters)
+
+            for filter_i in filters:
+                filter = Filters.objects.get(filter_name = filter_i["filter_name"])
+                filter_value_by_filter = FilterValues.objects.filter(fk_filter = filter).values_list('filter_value')
+                filter_values = [
+                    {"filter_value": item[0]}
+                    for item in filter_value_by_filter
+                ]
                 values = []
-                for value in filer_values:
-                    values.append(re.sub("['(),]", "", str(value)))
+                for value in filter_values:
+                    values.append(value['filter_value'])
+                print(filter_values)
                 target_words.append(
                     {
-                        "name": record,
+                        "name": filter_i["filter_name"],
                         "value": values,
                         "dashboard": dashbord["value"],
-                        "id_native_filter": id_native_filter,
+                        "id_native_filter": filter_i["id_native_filter"],
                     }
                 )
+
+
+
+            # выбираем фильтры по дашборду
+            # cursor.execute(
+            #     "SELECT filters.filter_name, filters.id_native_filter  FROM dashboards, filters WHERE dashboards.table_name = %(used_dashboard)s and dashboards.id = filters.id_dashboard",
+            #     {"used_dashboard": dashbord["value"]},
+            # )
+            # print("дошел до 50 строки")
+            # records = cursor.fetchall()
+            # print(f"Record: {records}")
+
+            # выбираем значения фильтров по фильтрам
+            # for record in records:
+            #     id_native_filter = re.sub("['(),]", "", str(record[1]))
+            #     record = re.sub("['(),]", "", str(record[0]))
+            #     cursor.execute(
+            #         "SELECT filter_values.filter_value FROM dashboards,  filters, filter_values WHERE dashboards.table_name =   %(used_dashboard)s and dashboards.id = filters.id_dashboard and  filters.filter_name = %(used_filter)s and filters.id =  filter_values.id_filter",
+            #         {"used_dashboard": dashbord["value"], "used_filter": record},
+            #     )
+            #     filer_values = cursor.fetchall()
+            #     values = []
+            #     for value in filer_values:
+            #         values.append(re.sub("['(),]", "", str(value)))
+            #     target_words.append(
+            #         {
+            #             "name": record,
+            #             "value": values,
+            #             "dashboard": dashbord["value"],
+            #             "id_native_filter": id_native_filter,
+            #         }
+            #     )
+
         print(dashboards)
         print(target_words)
-        cursor.close()
+        # cursor.close()
         connection.close()
         print("Соединение с базой данных закрыто.")
 

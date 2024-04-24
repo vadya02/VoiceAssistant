@@ -5,7 +5,7 @@ import { getHistory } from "../api/getHistory";
 class AppStore {
 	count = 0;
 	response = "";
-	isAuthenticated = false;
+	isAuthenticated = null;
 	links = [];
 	authToken = localStorage.getItem("authToken");
 
@@ -36,10 +36,11 @@ class AppStore {
     }
 	};
 
-  checkAuth = () => {
+  checkAuth = async () => {
+
     if(this.authToken) {
       // Если есть токен, проверяем его на сервере
-      axios({
+      await axios({
         method: "GET",
         url: `${process.env.REACT_APP_URL_BACKEND}auth/users/me/`, // Замените на ваш URL для проверки авторизации
         headers: {
@@ -51,6 +52,7 @@ class AppStore {
           console.log('login successfull');
         })
         .catch((error) => {
+          localStorage.removeItem("authToken");
           console.log("Ошибка проверки авторизации:", error);
           this.setIsAuthenticated(false);
         });

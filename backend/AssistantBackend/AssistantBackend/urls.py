@@ -28,7 +28,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
-    path('auth/', include('djoser.urls.jwt')),
+    # path('auth/', include('djoser.urls.jwt')),
     # path('upload_audio_file_mp3/', AudioUploadViewMp3.as_view(), name='upload_audio'),
     path('upload_audio_file_mp3/', AudioUploadViewMp3V2.as_view(), name='upload_audio'),
     path('get_history_of_requests/', RequestHistoryList.as_view(), name='history_of_requests'),

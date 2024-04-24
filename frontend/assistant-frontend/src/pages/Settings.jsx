@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Container, Form, Row } from 'react-bootstrap';
 import Header from '../components/Header';
-
+import transition from '../transition';
 
 function Settings({}) {
   const [text, setText] = useState("");
@@ -32,4 +32,4 @@ function Settings({}) {
   )
 }
 
-export default Settings
+export default transition( Settings)
