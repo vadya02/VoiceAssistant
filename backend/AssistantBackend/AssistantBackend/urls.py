@@ -32,6 +32,6 @@ urlpatterns = [
     # path('upload_audio_file_mp3/', AudioUploadViewMp3.as_view(), name='upload_audio'),
     path('upload_audio_file_mp3/', AudioUploadViewMp3V2.as_view(), name='upload_audio'),
     path('get_history_of_requests/', RequestHistoryList.as_view(), name='history_of_requests'),
-    path('upload_audio_text/', AudioUploadViewText.as_view(), name='history_of_requests'),
+    path('upload_text/', AudioUploadViewText.as_view(), name='history_of_requests'),
     path('get_user_data/', CurrentUserView.as_view(), name='get_user_data'),
 ]

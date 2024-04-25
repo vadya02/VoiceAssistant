@@ -17,7 +17,7 @@ const App = observer(() =>  {
 			<Provider store={store}>
           <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
-							<Route path="/StartPage" element={<StartPage store={store} />} />
+							<Route index path="/" element={<StartPage store={store} />} />
 							<Route
 								path="/MainPage"
 								element={
