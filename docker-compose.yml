@@ -6,12 +6,12 @@ services:
       context: ./backend/AssistantBackend
     ports:
       - "8000:8000" 
-    # environment:
-    #   - DJANGO_SECRET_KEY='django-insecure-$j_2!@zn(y8%_efv=(5vm1m2r8utw_3junjzw@z-co90)fiu6b'  # Используем переменные окружения
-    #   - DB_NAME='assistant-db'
-    #   - USER='postgres
-    #   - PASSWORD='root'
-    #   - HOST=postgres
+    environment:
+      - DJANGO_SECRET_KEY='django-insecure-$j_2!@zn(y8%_efv=(5vm1m2r8utw_3junjzw@z-co90)fiu6b'  # Используем переменные окружения
+      - DB_NAME='assistant-db'
+      - USER='postgres
+      - PASSWORD='root'
+      - HOST=postgres
     # environment:
     #   - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}  # Используем переменные окружения
     #   - DB_NAME=${DB_NAME}

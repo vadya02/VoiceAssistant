@@ -9,9 +9,9 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from utils.Parse_w2v_text import ParseKeywords
 
-# from utils.parse_w2v import ParseKeywords
+# from utils.Parse_w2v_text import ParseKeywords
+from utils.parse_w2v import ParseKeywords
 from utils.ParseText import ParseText
 
 from AssistantBackendApp.serializers import AudioFileSerializer
@@ -194,28 +194,35 @@ class RequestHistoryList(generics.ListAPIView):
 
 
 class AudioUploadViewText(generics.ListAPIView):
-    serializer_class = RequestHistorySerializer
+    
+        serializer_class = RequestHistorySerializer
 
-    def post(self, request, *args, **kwargs):
-        print(self.request.user)
-        print(self.request.user.is_authenticated)
+        def post(self, request, *args, **kwargs):
+            try:
+                print(self.request.user)
+                print(self.request.user.is_authenticated)
+                text = self.request.POST.get("textRequest", "")
+                print(f"Присланный текст: {text}")
+                url = ParseKeywords(text)
+                print(url)
+                if url != None:
+                    obj, created = RequestHistory.objects.get_or_create(
+                        user=self.request.user,
+                        url=url,
+                        text=text,
+                    )
+                    print(url)
+                    return Response({
+                        "message": "File uploaded successfully.",
+                        "url": url,
+                        "text": text,
+                    })
+                else:
+                    return Response({"url": "null", "text": text})
+            except Exception as e:
+                print(f"message_error: {e}")
+                return Response({"message_error": {e}})
 
-        text = self.request.data.get("textRequest", "")
-        print(f"Присланный текст: {text}")
-        url = ParseText(text)
-        url = "http://213.171.10.37:8088/superset/dashboard/12/?native_filters_key=jq9pf2aXz9sgIwMI4e93RLk20IGHu5DI5-Q30RvvwuMqUI4aa00PjdbJvzOkwzNv12345"
-        print(url)
-        if url != None:
-            obj, created = RequestHistory.objects.get_or_create(
-                user=self.request.user,
-                url=url,
-                text=text,
-            )
-            return Response(
-                {"message": "File uploaded successfully.", "url": url, "text": text}
-            )
-        else:
-            return Response({"url": "null"})
 
 
 class CurrentUserView(APIView):

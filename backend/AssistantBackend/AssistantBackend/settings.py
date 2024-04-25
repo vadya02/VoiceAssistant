@@ -277,11 +277,15 @@ class NLTKResources:
         return cls._instance
 
     def load_resources(self):
+        try:
+            from nltk.corpus import stopwords
+            self.stop_words = set(stopwords.words('russian'))
+        except:
         # Загрузка стоп-слов
-        nltk.download('stopwords')
-        nltk.download('punkt')
-        nltk.download('wordnet')
-        self.stop_words = set(stopwords.words('russian'))
+            nltk.download('stopwords')
+            nltk.download('punkt')
+            nltk.download('wordnet')
+            self.stop_words = set(stopwords.words('russian'))
         # Здесь можно добавить и другие ресурсы, например, POS-теггеры и т.д.
 
         # После загрузки ресурсов вы можете выполнить другие операции, если необходимо

@@ -16,7 +16,7 @@ const TextRequest = observer(() => {
 
 	const uploadTextRequest = (request) => {
 		axios
-			.post(`${process.env.REACT_APP_URL_BACKEND}upload_audio_text/`, {
+			.post(`${process.env.REACT_APP_URL_BACKEND}upload_text/`, {
 				headers: {
 					Authorization: `Token ${localStorage.getItem("authToken")}`,
 				},
