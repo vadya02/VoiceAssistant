@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "AssistantBackendApp",
     "rest_framework.authtoken",
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
