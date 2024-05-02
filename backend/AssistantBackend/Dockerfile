@@ -16,7 +16,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app
 # WORKDIR /app/AssistantBackend
 # Выполняем миграции (если нужно)
-# RUN python manage.py migrate
 
+
+CMD  python manage.py runserver 0.0.0.0:8000
 # Запускаем Django
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

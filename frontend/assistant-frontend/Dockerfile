@@ -1,18 +1,36 @@
-# Используем базовый образ Node.js
-FROM node:16
-
-# Устанавливаем рабочую директорию
+# Set the base image for the build stage
+FROM node:alpine as build
 WORKDIR /app
 
-# Копируем package.json и устанавливаем зависимости
-COPY package.json .
-COPY package-lock.json .
+# Copy package.json and package-lock.json (or yarn.lock) to leverage Docker caching
+COPY package*.json ./
+
+# Install project dependencies
 RUN npm install
 
-# Копируем исходники и собираем проект
+# Copy the rest of your application code
 COPY . .
+
+# Build the application
 RUN npm run build
 
-# Используем Nginx для раздачи статики
-FROM nginx:latest
-COPY --from=0 /app/build /usr/share/nginx/html
+
+
+# Set the base image for the production environment
+FROM nginx:stable-alpine
+
+
+
+
+
+# Copy the built files from the build stage to the production image
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy custom nginx configuration
+COPY --from=build /app/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80 to the host
+EXPOSE 80
+
+# Command to run nginx in the foreground
+CMD ["nginx", "-g", "daemon off;"]

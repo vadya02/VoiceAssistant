@@ -46,16 +46,16 @@ load_dotenv()
 # SECURITY WARNING: keep the secret key used in production secret!
 
 print(f'DB_NAME : {os.getenv("DB_NAME")}')
-print(f'USER : {environ.get("USER")}')
-print(f'PASSWORD : {environ.get("PASSWORD")}')
-print(f'HOST : {environ.get("HOST")}')
+print(f'USER : {environ.get("DB_USER")}')
+print(f'PASSWORD : {environ.get("DB_PASSWORD")}')
+print(f'HOST : {environ.get("DB_HOST")}')
 print(f'SECRET_KEY : {environ.get("DJANGO_SECRET_KEY")}')
 SECRET_KEY = environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
 
 
 # Application definition
@@ -128,10 +128,10 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": environ.get("DB_NAME"),
-        "USER": environ.get("USER"),
-        "PASSWORD": environ.get("PASSWORD"),
-        "HOST": environ.get("HOST"),  # Или IP-адрес вашего PostgreSQL сервера
-        "PORT": environ.get("PORT"),  # Порт PostgreSQL (по умолчанию 5432)
+        "USER": environ.get("DB_USER"),
+        "PASSWORD": environ.get("DB_PASSWORD"),
+        "HOST": environ.get("DB_HOST"),  # Или IP-адрес вашего PostgreSQL сервера
+        "PORT": environ.get("DB_PORT"),  # Порт PostgreSQL (по умолчанию 5432)
     }
 }
 
@@ -213,7 +213,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
-    os.getenv('HOST')
 
 ]
 
@@ -230,12 +229,12 @@ CORS_ALLOW_HEADERS = [
     "Access-Control-Allow-Headers",
     "Access-Control-Allow-Origin",
 ]
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Замените на адрес вашего фронтенда
-    "http://127.0.0.1:3000",  # Замените на адрес вашего фронтенда
-    # Другие допустимые источники
-]
+CORS_ORIGIN_ALLOW_ALL = True
+# ALLOWED_HOSTS = ["*"]
+# CORS_ALLOWED_ORIGINS = [
+#     "*",  # Замените на адрес вашего фронтенда
+#    # Другие допустимые источники
+# ]
 
 DB_NAME = environ.get('DB_NAME')
 USER = environ.get('USER')
