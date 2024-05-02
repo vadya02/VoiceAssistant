@@ -1,73 +1,52 @@
-version: '3.8'
-
+version: "3.8"
 services:
+  nginx-react:
+    container_name: ngixreactapp
+    build:
+      context: ./frontend/assistant-frontend/
+
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+
+    # environment:
+    #   - REACT_APP_URL_BACKEND: http://django:8000
+
   django:
     build:
       context: ./backend/AssistantBackend
-    ports:
-      - "8000:8000" 
-    environment:
-      - DJANGO_SECRET_KEY='django-insecure-$j_2!@zn(y8%_efv=(5vm1m2r8utw_3junjzw@z-co90)fiu6b'  # Используем переменные окружения
-      - DB_NAME='assistant-db'
-      - USER='postgres
-      - PASSWORD='root'
-      - HOST=postgres
-    # environment:
-    #   - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}  # Используем переменные окружения
-    #   - DB_NAME=${DB_NAME}
-    #   - USER=${USER}
-    #   - PASSWORD=${PASSWORD}
-    #   - HOST=${HOST}
-    #   - PORT=${PORT}
-    env_file:
-      - ./.env.dev
-    depends_on:
-      - postgres
-
-  # react:
-  #   build:
-  #     context: ./frontend/assistant-frontend
-  #   # environment:
-  #   #   - REACT_APP_URL=${REACT_APP_URL}
-  #   #   - REACT_APP_URL_BACKEND=${REACT_APP_URL_BACKEND}
-  #   # env_file:
-  #   #   - ./front.env
-    
-  #   ports:
-  #     - "3000:80"
-
-  # nginx:
-  #   build:
-  #     context: ./nginx
-  #   ports:
-  #     - "80:80"
-
-  postgres:
-    image: postgres:15
-    # environment:
-    #   - POSTGRES_DB=${DB_NAME}
-    #   - POSTGRES_USER=${USER}
-    #   - POSTGRES_PASSWORD=${PASSWORD}
+      dockerfile: Dockerfile
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - ./.env.dev
+      - ./app/:/usr/src/app/
+    command: python manage.py migrate
+    ports:
+      - 8000:8000
+
+  db:
+    restart: always
+    image: postgres
+    container_name: postgres #you can change this
+    environment:
+      - POSTGRES_USER=demo
+      - POSTGRES_PASSWORD=demo
+      - POSTGRES_DB=demo
+      - POSTGRES_PORT=5432
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
 
-  # pgadmin:
-  #   image: dpage/pgadmin4:4.23
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
-  #     PGADMIN_DEFAULT_PASSWORD: password
-  #     PGADMIN_LISTEN_PORT: 80
-  #   ports:
-  #     - 15432:80
-  #   volumes:
-  #     - pgadmin:/var/lib/pgadmin
-  #   depends_on:
-  #     - postgres
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: demo-pgadmin #you can change this
+    depends_on:
+      - db
+    ports:
+      - "5050:90"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: root
+    restart: always
 
 volumes:
   postgres_data:
-
