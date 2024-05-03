@@ -255,8 +255,10 @@ class Word2VecModel:
     def load_model(self):
         current_directory = os.path.dirname(os.path.abspath(__file__))
 
+
         # Составляем путь к файлу model.bin
-        model_path = os.path.join(current_directory, 'model.bin')
+        # model_path = os.path.join(current_directory, 'model.bin')
+        model_path = '/app/AssistantBackend/AssistantBackend/model.bin'
         # model_path = 'C:/Users/ehiri/Desktop/apache-front/VoiceAssistant/assistant-back/AssistantBack/AssistantBack/model.bin'  # Путь к вашей модели
         self.model = gensim.models.KeyedVectors.load_word2vec_format(model_path, binary=True)
 

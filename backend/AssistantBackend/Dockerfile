@@ -12,8 +12,25 @@ ENV PYTHONUNBUFFERED 1
 COPY requirements.txt /app
 RUN pip install --no-cache-dir -r requirements.txt
 
+
+
+RUN apt-get update && \
+    apt-get install -y wget unzip
+
+
 # Копируем проект
 COPY . /app
+
+# Создаем директорию для модели
+RUN mkdir -p /app/AssistantBackend/AssistantBackend
+
+# Скачивание и распаковка модели
+RUN wget http://vectors.nlpl.eu/repository/20/65.zip -O /tmp/model.zip
+RUN  unzip -j /tmp/model.zip 'model.bin' -d /app/AssistantBackend/AssistantBackend/
+RUN echo herelll "$PWD"
+RUN rm /tmp/model.zip
+
+
 # WORKDIR /app/AssistantBackend
 # Выполняем миграции (если нужно)
 
