@@ -31,8 +31,7 @@ RUN echo herelll "$PWD"
 RUN rm /tmp/model.zip
 
 
-# WORKDIR /app/AssistantBackend
-# Выполняем миграции (если нужно)
+
 
 
 CMD  python manage.py runserver 0.0.0.0:8000
