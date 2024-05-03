@@ -104,7 +104,9 @@ deactivate
 Для запуска докер контейнера 
 ```
 docker-compose up --build
+```
 если недостаточно памяти
+```
 docker system prune --all --force &&
 ```
 
