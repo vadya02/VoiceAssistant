@@ -8,13 +8,19 @@
 git clone https://github.com/vadya02/VoiceAssistant.git
 ```
 
-## 2. Запустите приложение
+## 2. Перейдите в папку проекта
+
+```bash
+cd frontend/assistant-frontend
+```
+
+## 3. Запустите приложение через docker compose
 
 ```bash
 docker compose up
 ```
 
-# Запуск через локальную ОС
+# Запуск через установку на локальную ОС
 
 ## Клонируйте репозиторий
 ```
