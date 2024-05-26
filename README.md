@@ -1,4 +1,21 @@
-# VoiceAssistant
+# Инструкция по установке приложения "Голосовой помощник для Apache Superset"
+
+# Запуск через Docker Compose
+
+## 1. Клонируйте репозиторий  github
+
+```bash
+git clone https://github.com/vadya02/VoiceAssistant.git
+```
+
+## 2. Запустите приложение
+
+```bash
+docker compose up
+```
+
+# Запуск через локальную ОС
+
 ## Клонируйте репозиторий
 ```
 git clone https://github.com/vadya02/VoiceAssistant.git
