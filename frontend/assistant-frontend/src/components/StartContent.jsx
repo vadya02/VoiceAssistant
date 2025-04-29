@@ -38,7 +38,7 @@ function StartContent({}) {
 					</Col>
 					<Col md={6} className="text-center mx-3">
 						<h1>Голосовой помощник для Apache Superset</h1>
-						<p>Стройте дашборды с помощью голосовых команд</p>
+						<h3>Стройте дашборды с помощью голосовых команд</h3>
 						<Button
 							variant="primary"
 							className="login"
@@ -50,7 +50,7 @@ function StartContent({}) {
 								console.log(isModalAuthActive);
 							}}
 						>
-							Попробовать
+							Войти в систему
 						</Button>
 					</Col>
 				</Row>

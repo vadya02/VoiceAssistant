@@ -1,8 +1,8 @@
 # Используем базовый образ Node.js
-FROM node:16
+FROM node:22-bullseye
 
 # Устанавливаем рабочую директорию
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # Копируем package.json и устанавливаем зависимости
 COPY package.json .
@@ -11,8 +11,11 @@ RUN npm install
 
 # Копируем исходники и собираем проект
 COPY . .
-RUN npm run build
+# RUN npm run build
 
 # Используем Nginx для раздачи статики
-FROM nginx:latest
-COPY --from=0 /app/build /usr/share/nginx/html
+# FROM nginx:latest
+# COPY --from=0 /app/build /usr/share/nginx/html
+EXPOSE 3000
+
+CMD ["npm", "start"]

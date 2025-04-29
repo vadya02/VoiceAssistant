@@ -15,31 +15,42 @@ const VoiceRecorderWAV = observer(({ getHistory }) => {
 	const [checkResult, setCheckResult] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [nullUrl, setNullUrl] = useState(false);
-	const { response, setResponse } = store;
+	// const { response, setResponse } = store;
 
-	const stopRecording = async () => {
-		setIsRecording(false);
-		recorder
-			.stop()
-			.getMp3()
-			.then(([buffer, blob]) => {
-				console.log("Записанный blob: " + blob);
-				setAudioBlob(blob);
-				uploadAudio(blob);
-				console.log("Записанный audio: " + blob);
-			})
-			.then(() => {
-				console.log("stop record");
-			})
-			.catch((e) => console.log(e));
-	};
+
+	// const stopRecording = async () => {
+	// 	setIsRecording(false);
+	// 	recorder
+	// 		.stop()
+	// 		.getMp3()
+	// 		.then(([buffer, blob]) => {
+	// 			console.log("Записанный blob: " + blob);
+	// 			setAudioBlob(blob);
+	// 			uploadAudio(blob);
+	// 			console.log("Записанный audio: " + blob);
+	// 		})
+	// 		.then(() => {
+	// 			console.log("stop record");
+	// 		})
+	// 		.catch((e) => console.log(e));
+	// };
 
 	const onStopRecording = () => {
 		console.log("blob: " + recordedBlob);
 		uploadAudio(recordedBlob);
 	};
 
-	const recorderControls = useVoiceVisualizer({});
+
+	const onClearCanvas = () => {
+		setNullUrl(false)
+		setCheckResult(false)
+	};
+
+	const onStartRecording = () => {
+		// document.querySelector('voice-visualizer__btn ').textContent = 'Очистить';
+	};
+
+	const recorderControls = useVoiceVisualizer({onClearCanvas, onStartRecording});
 	const { recordedBlob, error, audioRef } = recorderControls;
 
 	useEffect(() => {
@@ -56,17 +67,17 @@ const VoiceRecorderWAV = observer(({ getHistory }) => {
 		console.error(error);
 	}, [error]);
 
-	const startRecording = async () => {
-		console.log("start record");
+	// const startRecording = async () => {
+	// 	console.log("start record");
 
-		setIsRecording(true);
-		recorder
-			.start()
-			.then(() => {
-				// recording started
-			})
-			.catch((e) => console.error(e));
-	};
+	// 	setIsRecording(true);
+	// 	recorder
+	// 		.start()
+	// 		.then(() => {
+	// 			// recording started
+	// 		})
+	// 		.catch((e) => console.error(e));
+	// };
 
 	const uploadAudio = (audioBlob) => {
 		console.log("blob: " + audioBlob);
@@ -89,20 +100,27 @@ const VoiceRecorderWAV = observer(({ getHistory }) => {
 					},
 				})
 				.then((response) => {
-					if (response.data.url === "null") {
-						setResponse(response.data.text);
+					store.setResponse(response.data);
+
+					if (response.data.url === 'null') {
+						store.setCheckResult(false)
+						store.setResponse(response.data);
 						setNullUrl(true);
 					} else {
-						setResponse(response.data.text);
-						window.open(response.data.url, "_blank");
-						getHistory();
+						store.setCheckResult(true)
+						store.setFiltersResponse(response.data.response_with_filters)
+						console.log("response: " + response.data.url);
+						setNullUrl(false);
+
+						// window.open(response.data.url, "_blank");
 					}
+					store.getHistoryAction();
 					setLoading(false);
 					setCheckResult(true);
 				})
 				.catch((error) => {
-					setLoading(false)
-					setNullUrl(true)
+					setLoading(false);
+					setNullUrl(true);
 
 					// Обработка ошибок
 					console.error("Error posting data:", error);
@@ -123,7 +141,19 @@ const VoiceRecorderWAV = observer(({ getHistory }) => {
 					height={180}
 					mainBarColor="black"
 					controls={recorderControls}
+					barWidth={5}
 				/>
+				{/* {recordedBlob && (
+					<AudioVisualizer
+						ref={audioRef}
+						blob={recordedBlob}
+						width={500}
+						height={75}
+						barWidth={1}
+						gap={0}
+						barColor={"#f76565"}
+					/>
+				)} */}
 
 				{/* <div
 					className={isRecording ? "microphone-stop" : "microphone-record"}
@@ -154,7 +184,7 @@ const VoiceRecorderWAV = observer(({ getHistory }) => {
 			<Row className="d-flex justify-content-center align-items-center p-2">
 				{checkResult && !nullUrl && (
 					<h5 className="text-center">
-						Распознанный текст: "{store.response}"
+						Распознанный текст: "{store.response.text}"
 					</h5>
 				)}
 			</Row>
@@ -162,7 +192,7 @@ const VoiceRecorderWAV = observer(({ getHistory }) => {
 				{nullUrl && (
 					<>
 						<h5 className="text-center">
-							Распознанный текст: "{store.response}"
+							Распознанный текст: "{store.response.text}"
 						</h5>
 						<h5 className="text-center" style={{ color: "red" }}>
 							Не удалось составить запрос, повторите попытку

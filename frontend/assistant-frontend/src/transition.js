@@ -4,7 +4,7 @@ const transition = (OgComponent) => {
   const pageVariants = {
     initial: {
       opacity: 0,
-      x: "-100vw", // анимация перехода страницы с левой стороны
+      x: "-100vw",
     },
     in: {
       opacity: 1,
@@ -12,7 +12,7 @@ const transition = (OgComponent) => {
     },
     out: {
       opacity: 0,
-      x: "100vw", // анимация перехода страницы вправо
+      x: "100vw",
     },
   };
   

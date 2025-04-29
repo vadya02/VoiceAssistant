@@ -13,7 +13,10 @@ body {
   background: black;
   transform-origin: bottom;
 }
-
+.custom-hover-effect:hover {
+  color: #333;
+  opacity: 0.8;
+}
 .slide-out {
   position: fixed;
   top: 0;

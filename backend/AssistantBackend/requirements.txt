@@ -8,11 +8,13 @@ cryptography==42.0.5
 DAWG-Python==0.7.2
 defusedxml==0.8.0rc2
 Django==4.2
+django-environ==0.11.2
 django-cors-headers==4.3.1
 django-templated-mail==1.1.1
 djangorestframework==3.15.1
 djangorestframework-simplejwt==5.3.1
 djoser==2.2.2
+drf-yasg==1.21.7
 ffmpeg==1.4
 gensim==4.3.2
 idna==3.7

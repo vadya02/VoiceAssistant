@@ -3,8 +3,7 @@ import React, { useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useNavigate } from "react-router";
 import store from "../../store/Store";
-import LoadingOverlay from "./LoadingOverlay";
-
+import LoadingOverlayLogin from "./LoadingOverlayLogin";
 const LoginModal = (props) => {
 	const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
@@ -133,7 +132,7 @@ const LoginModal = (props) => {
 								Войти
 							</Button>
 						</Form.Group>
-						<Form.Group
+						{/* <Form.Group
 							style={{
 								alignItems: "center",
 								display: "flex",
@@ -148,11 +147,11 @@ const LoginModal = (props) => {
 							>
 								Зарегистрироваться
 							</Form.Label>
-						</Form.Group>
+						</Form.Group> */}
 					</Form>
 				</Modal.Body>
 			</Modal>
-			{loading && <LoadingOverlay show={loading} />}
+			{loading && <LoadingOverlayLogin show={loading} />}
 		</>
 	);
 };

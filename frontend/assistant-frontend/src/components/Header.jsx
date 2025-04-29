@@ -1,14 +1,14 @@
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Dropdown, Nav, Navbar } from "react-bootstrap";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import "../assets/css/style.css";
 import Logo from "../assets/img/Logo.png";
 import { default as store } from "../store/Store";
 import LoginModal from "./Auth/LoginModal";
-import ModalReg from "./Auth/ModalReg";
-
 const Header = observer(({ showBack }) => {
 	// const { userStore } = store(); // Подставьте ваше хранилище MobX
 	const authToken = localStorage.getItem("authToken");
@@ -16,9 +16,9 @@ const Header = observer(({ showBack }) => {
 	const [isModalAuthActive, setIsModalAuthActive] = useState(false);
 	const [isModalRegActive, setIsModalRegActive] = useState(false);
 	const [nickname, setNickname] = useState("");
-	useEffect(() => {
-		store.checkAuth()
-	})
+	// useEffect(() => {
+	// 	store.checkAuth()
+	// })
 	function handleModalAuthActiveOpen() {
 		setIsModalAuthActive(true);
 	}
@@ -93,6 +93,16 @@ const Header = observer(({ showBack }) => {
 									>
 										{nickname}
 									</h5>
+
+
+									<Link to="/history" className=" underline text-decoration-none mt-1">
+										<h5 className=" text-white mx-3 custom-hover-effect">
+											История запросов
+										</h5>
+										
+									</Link>
+
+									
 									<Dropdown
 										align={{ lg: "end" }}
 										title="Left-aligned but right aligned when large screen"
@@ -124,7 +134,7 @@ const Header = observer(({ showBack }) => {
 							{!store.isAuthenticated && (
 								<>
 									<Button
-										variant="outline-primary"
+										variant="primary"
 										className=" mx-2 p-2 px-3"
 										onClick={() => {
 											handleModalAuthActiveOpen();
@@ -133,7 +143,7 @@ const Header = observer(({ showBack }) => {
 									>
 										Вход
 									</Button>
-									<Button
+									{/* <Button
 										variant="primary"
 										className="mx-2 p-2 px-3"
 										onClick={() => {
@@ -141,7 +151,7 @@ const Header = observer(({ showBack }) => {
 										}}
 									>
 										Регистрация
-									</Button>
+									</Button> */}
 								</>
 							)}
 							{store.isAuthenticated && showBack && (
@@ -164,11 +174,11 @@ const Header = observer(({ showBack }) => {
 						handleModalClose={handleModalAuthActiveClose}
 						openRegClick={handleModalRegActiveOpen}
 					/>
-					<ModalReg
+					{/* <ModalReg
 						showModal={isModalRegActive}
 						handleModalClose={handleModalRegActiveClose}
 						openAuthClick={handleModalAuthActiveOpen}
-					/>
+					/> */}
 				</Navbar>
 			</header>
 		</div>

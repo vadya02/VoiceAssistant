@@ -12,13 +12,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from datetime import timedelta
-from os import environ
 
-# from scipy.linalg import get_blas_funcs, triu
-# try:
-#     from numpy import triu
-# except ImportError:
-#     from scipy.linalg import get_blas_funcs, triu
+# from os import environ
+from pathlib import Path
+
+import environ
 import gensim
 import nltk
 import pydub
@@ -26,31 +24,20 @@ from dotenv import load_dotenv
 from nltk.corpus import stopwords
 from numpy import triu
 
-# Получаем путь к текущему файлу (этот файл views.py)
 current_file_path = os.path.abspath(__file__)
 
-# Получаем путь к папке views
 views_folder_path = os.path.dirname(current_file_path)
 
-# Получаем путь к корневой папке проекта (предполагая, что ваш файл .exe находится в папке executables)
 project_root_path = os.path.dirname(os.path.dirname(views_folder_path))
 exe_file_path = os.path.join(
     project_root_path, "ffmpeg-2023-11-22-git-0008e1c5d5-essentials_build","bin", "ffmpeg.exe"
 )
-print(f'{exe_file_path}')
-# pydub.AudioSegment.converter = exe_file_path
+env = environ.Env()
+
+environ.Env.read_env(env_file=Path('../docker/env/.env.dev'))
 load_dotenv()
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-
-print(f'DB_NAME : {os.getenv("DB_NAME")}')
-print(f'USER : {environ.get("USER")}')
-print(f'PASSWORD : {environ.get("PASSWORD")}')
-print(f'HOST : {environ.get("HOST")}')
-print(f'SECRET_KEY : {environ.get("DJANGO_SECRET_KEY")}')
-SECRET_KEY = environ.get("DJANGO_SECRET_KEY")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -124,21 +111,18 @@ WSGI_APPLICATION = "AssistantBackend.wsgi.application"
 #     }
 # }
 
-print(os.environ.get("DB_NAME"))
+print(os.getenv("POSTGRES_DB"))
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": environ.get("DB_NAME"),
-        "USER": environ.get("USER"),
-        "PASSWORD": environ.get("PASSWORD"),
-        "HOST": environ.get("HOST"),  # Или IP-адрес вашего PostgreSQL сервера
-        "PORT": environ.get("PORT"),  # Порт PostgreSQL (по умолчанию 5432)
+        "ENGINE": os.getenv("POSTGRES_ENGINE"),
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST"),
+        "PORT": os.getenv("POSTGRES_PORT"), 
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -159,7 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-# LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 # TIME_ZONE = 'UTC'
 
@@ -170,27 +154,18 @@ TIME_ZONE = "Asia/Shanghai"
 ROOT_URLCONF = "AssistantBackend.urls"
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': 'activate/{uid}/{token}',
-    # 'SEND_ACTIVATION_EMAIL': True,
     'SERIALIZERS': {},
     'EMAIL': {
-        # 'activation': 'cars.templates.email.activation',
         'activation': 'cars.core.email.ActivationEmail',
-
-        # 'password_reset': 'path.to.your.custom.password_reset.template.password_reset',
-        # Другие операции и шаблоны
     },
 }
 SIMPLE_JWT = {
@@ -215,7 +190,6 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     os.getenv('HOST')
-
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -233,16 +207,17 @@ CORS_ALLOW_HEADERS = [
 ]
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Замените на адрес вашего фронтенда
-    "http://127.0.0.1:3000",  # Замените на адрес вашего фронтенда
-    # Другие допустимые источники
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+
 ]
 
-DB_NAME = environ.get('DB_NAME')
-USER = environ.get('USER')
-PASSWORD = environ.get('PASSWORD')
-HOST = environ.get('HOST')
-PORT = environ.get('PORT')
+DB_NAME = env('POSTGRES_DB')
+USER = env('POSTGRES_USER')
+PASSWORD = env('POSTGRES_PASSWORD')
+HOST = env('POSTGRES_HOST')
+PORT = env('POSTGRES_PORT')
+SUPERSET_HOST = env('SUPERSET_HOST')
 
 
 class Word2VecModel:
@@ -257,9 +232,7 @@ class Word2VecModel:
     def load_model(self):
         current_directory = os.path.dirname(os.path.abspath(__file__))
 
-        # Составляем путь к файлу model.bin
         model_path = os.path.join(current_directory, 'model.bin')
-        # model_path = 'C:/Users/ehiri/Desktop/apache-front/VoiceAssistant/assistant-back/AssistantBack/AssistantBack/model.bin'  # Путь к вашей модели
         self.model = gensim.models.KeyedVectors.load_word2vec_format(model_path, binary=True)
 
 WORD2VEC_MODEL = Word2VecModel()
@@ -282,14 +255,10 @@ class NLTKResources:
             from nltk.corpus import stopwords
             self.stop_words = set(stopwords.words('russian'))
         except:
-        # Загрузка стоп-слов
+
             nltk.download('stopwords')
             nltk.download('punkt')
             nltk.download('wordnet')
             self.stop_words = set(stopwords.words('russian'))
-        # Здесь можно добавить и другие ресурсы, например, POS-теггеры и т.д.
 
-        # После загрузки ресурсов вы можете выполнить другие операции, если необходимо
-
-# Создаем экземпляр класса
 NLTK_RESOURCES = NLTKResources()

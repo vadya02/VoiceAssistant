@@ -1,8 +1,8 @@
 // LoadingOverlay.tsx
 import React from "react";
-import { Button, Container, Row } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 import "./Auth.css";
-const LoadingOverlay = ({ show }) => {
+const LoadingOverlayLogin = ({ show }) => {
 	return (
 		<div className={`overlay ${show ? "active" : ""}`}>
 			<div className="overlay-content">
@@ -18,9 +18,7 @@ const LoadingOverlay = ({ show }) => {
 							</div>
 						</Row>
 						<Row className="d-flex justify-content-center align-items-center pt-2">
-							<Button variant="primary">
-								Отменить
-							</Button>
+
 						</Row>
 					</Container>
 				</div>
@@ -33,4 +31,4 @@ const LoadingOverlay = ({ show }) => {
 	// </Modal>
 };
 
-export default LoadingOverlay;
+export default LoadingOverlayLogin;

@@ -11,8 +11,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 # from utils.Parse_w2v_text import ParseKeywords
-from utils.parse_w2v import ParseKeywords
-from utils.ParseText import ParseText
+from utils.old.parse_w2v import ParseKeywords
+from utils.SearchFilters import ParseFilters
 
 from AssistantBackendApp.serializers import AudioFileSerializer
 
@@ -33,6 +33,151 @@ exe_file_path = os.path.join(
     project_root_path, "ffmpeg-2023-11-22-git-0008e1c5d5-essentials_build", "ffmpeg.exe"
 )
 
+
+class AudioUploadViewMp3V2(generics.ListAPIView):
+    try:
+        serializer_class = RequestHistorySerializer
+
+        def post(self, request, *args, **kwargs):
+            print(f"Путь до ffmpeg: {exe_file_path}")
+            print(self.request.user)
+            print(self.request.user.is_authenticated)
+
+            serializer = AudioFileSerializer(data=request.data)
+            print(serializer)
+            try:
+                if serializer.is_valid():
+                    audio_file = serializer.validated_data["audio_file"]
+                    audio_stream = io.BytesIO(audio_file.read())
+                    # Перемещаем указатель в начало потока после чтения
+                    audio_stream.seek(0)
+                    audio = AudioSegment.from_file(audio_stream)
+                    audio = audio.set_channels(
+                        1)  # Установить один канал (моно)
+                    audio.export("audio.wav", format="wav")
+                    # Распознать речь
+                    recognizer = sr.Recognizer()
+                    with sr.AudioFile("audio.wav") as source:
+                        audio_data = recognizer.record(source)
+                        text = recognizer.recognize_google(audio_data,
+                                                           language="ru-RU")
+
+                    # url = ParseKeywords(text)
+                    # url, filters_and_values = ParseKeywordsV2(text)
+                    url, filters_and_values, response_with_filters, text = ParseFilters(
+                        text)
+                    print(f'filters_and_values: {filters_and_values}')
+                    if len(filters_and_values) == 0:
+                        return Response({"url": "null", "text": text})
+                    try:
+                        if url != None:
+                            obj, created = RequestHistory.objects.get_or_create(
+                                user=self.request.user,
+                                url=url,
+                                text=text,
+                            )
+                            print(url)
+                            return Response({
+                                "message": "File uploaded successfully.",
+                                "url": url,
+                                "text": text,
+                                "response_with_filters":           response_with_filters
+                            })
+                        else:
+                            return Response({"url": "null", "text": text})
+                    except Exception as e:
+                        print(f"message_error: {e}")
+                        return Response({
+                            "message_error":
+                            "Не удалось обработать команду",
+                            "url":
+                            "null",
+                            "text":
+                            text,
+                            "response_with_filters":
+                            response_with_filters
+                        })
+                else:
+                    return Response({"message": "Invalid request."},
+                                    status=400)
+            except Exception as e:
+                print(f"message_error: {e}")
+                return Response({
+                    "message_error": "Не удалось обработать команду",
+                    "url": "null",
+                    "text": text,
+                    "response_with_filters": response_with_filters
+                })
+    except Exception as e:
+        print(f"message_error: {e}")
+
+
+
+class RequestHistoryList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    # queryset = RequestHistory.objects.all()
+    serializer_class = RequestHistorySerializer
+
+    def get_queryset(self):
+        # Получаем историю запросов текущего пользователя
+        return RequestHistory.objects.filter(user=self.request.user)
+
+
+class AudioUploadViewText(generics.ListAPIView):
+    serializer_class = RequestHistorySerializer
+
+    def post(self, request, *args, **kwargs):
+        try:
+            print(self.request.user)
+            print(self.request.user.is_authenticated)
+            text = request.data.get("textRequest", "")
+            # text = self.request.POST["textRequest"]
+            print(f"Присланный текст: {text}")
+            # url = ParseKeywords(text)
+            # url, filters_and_values = ParseKeywordsV2(text)
+            url, filters_and_values, response_with_filters, text = ParseFilters(text)
+            print(f"составленный url: {url}")
+            print(filters_and_values)
+            if len(filters_and_values) == 0:
+                return Response({"url": "null", "text": text})
+
+            if url != None:
+                obj, created = RequestHistory.objects.get_or_create(
+                    user=self.request.user,
+                    url=url,
+                    text=text,
+                )
+                print(url)
+                return Response({
+                    "message": "Text request uploaded successfully.",
+                    "url": url,
+                    "text": text,
+                    "response_with_filters": response_with_filters
+                })
+            else:
+                return Response({"url": "null", "text": text})
+        except Exception as e:
+            print(f"message_error: {e}")
+            return Response({"url": "null", "text": text})
+
+
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # request.user содержит информацию о текущем пользователе
+        user_data = {
+            "username": request.user.username,
+            "email": request.user.email,
+            # Другие поля, которые вы хотите включить
+        }
+        return Response(user_data, status=status.HTTP_200_OK)
+
+
+
+# ***************************************************************
+# demo-----------------------------------------------------------
+# ***************************************************************
 # pydub.AudioSegment.converter = exe_file_path
 class AudioUploadViewMp3(generics.ListAPIView):
     try:
@@ -49,7 +194,7 @@ class AudioUploadViewMp3(generics.ListAPIView):
                 if serializer.is_valid():
                     audio_file = serializer.validated_data["audio_file"]
                     print(audio_file)
-                    
+
                     audio = AudioSegment.from_mp3(audio_file)
                     print(f"audio {audio}")
                     wav_data = audio.set_frame_rate(16000).raw_data
@@ -112,127 +257,3 @@ class AudioUploadViewMp3(generics.ListAPIView):
                 return Response({"message_error": {e}})
     except Exception as e:
         print(f"message_error: {e}")
-
-
-class AudioUploadViewMp3V2(generics.ListAPIView):
-    try:
-        serializer_class = RequestHistorySerializer
-
-        def post(self, request, *args, **kwargs):
-            print(f'Путь до ffmpeg: {exe_file_path}')
-            print(self.request.user)
-            print(self.request.user.is_authenticated)
-
-            serializer = AudioFileSerializer(data=request.data)
-            print(serializer)
-            try:
-                if serializer.is_valid():
-                    audio_file = serializer.validated_data["audio_file"]
-                    print(type(audio_file))
-                    print("Имя файла:", audio_file.name)
-                    print("Размер файла:", audio_file.size)
-
-                    audio_stream = io.BytesIO(audio_file.read())
-
-                    # Перемещаем указатель в начало потока после чтения
-                    audio_stream.seek(0)
-
-                    audio = AudioSegment.from_file(audio_stream)
-                    audio = audio.set_channels(
-                        1)  # Установить один канал (моно)
-                    audio.export("audio.wav", format="wav")
-                    # Распознать речь
-                    recognizer = sr.Recognizer()
-                    with sr.AudioFile("audio.wav") as source:
-                        audio_data = recognizer.record(source)
-                        text = recognizer.recognize_google(audio_data,
-                                                           language="ru-RU")
-
-                    print(f"Распознанный текст: {text}")
-
-                    url = ParseKeywords(text)
-                    print(f"url после нахождения ключевых слов: {url}")
-                    print(f"url: {url}")
-                    print(url)
-                    print(f"Тип URL: {type(url)} \n")
-                    try:
-                        if url != None:
-                            obj, created = RequestHistory.objects.get_or_create(
-                                user=self.request.user,
-                                url=url,
-                                text=text,
-                            )
-                            print(url)
-                            return Response({
-                                "message": "File uploaded successfully.",
-                                "url": url,
-                                "text": text,
-                            })
-                        else:
-                            return Response({"url": "null", "text": text})
-                    except Exception as e:
-                        print(f"message_error: {e}")
-                        return Response({"message_error": {e}})
-                else:
-                    return Response({"message": "Invalid request."},
-                                    status=400)
-            except Exception as e:
-                print(f"message_error: {e}")
-                return Response({"message_error": {e}})
-    except Exception as e:
-        print(f"message_error: {e}")
-
-
-class RequestHistoryList(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
-    # queryset = RequestHistory.objects.all()
-    serializer_class = RequestHistorySerializer
-
-    def get_queryset(self):
-        # Получаем историю запросов текущего пользователя
-        return RequestHistory.objects.filter(user=self.request.user)
-
-
-class AudioUploadViewText(generics.ListAPIView):
-    
-        serializer_class = RequestHistorySerializer
-
-        def post(self, request, *args, **kwargs):
-            try:
-                print(self.request.user)
-                print(self.request.user.is_authenticated)
-                text = self.request.POST.get("textRequest", "")
-                print(f"Присланный текст: {text}")
-                url = ParseKeywords(text)
-                print(url)
-                if url != None:
-                    obj, created = RequestHistory.objects.get_or_create(
-                        user=self.request.user,
-                        url=url,
-                        text=text,
-                    )
-                    print(url)
-                    return Response({
-                        "message": "File uploaded successfully.",
-                        "url": url,
-                        "text": text,
-                    })
-                else:
-                    return Response({"url": "null", "text": text})
-            except Exception as e:
-                print(f"message_error: {e}")
-                return Response({"message_error": {e}})
-
-
-
-class CurrentUserView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        # request.user содержит информацию о текущем пользователе
-        user_data = {
-            "username": request.user.username,
-            "email": request.user.email,
-            # Другие поля, которые вы хотите включить
-        }
-        return Response(user_data, status=status.HTTP_200_OK)

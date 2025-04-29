@@ -1,48 +1,61 @@
 // store.ts
 import axios from "axios";
-import { makeAutoObservable, runInAction } from "mobx";
-import { getHistory } from "../api/getHistory";
+import { makeAutoObservable } from "mobx";
 class AppStore {
 	count = 0;
 	response = "";
+  filtersResponse = "";
 	isAuthenticated = null;
 	links = [];
 	authToken = localStorage.getItem("authToken");
-
+  checkResult = false;
 	constructor() {
 		makeAutoObservable(this);
 	}
 
 	setLinks(value) {
-		this.isAuthenticated = value;
+		this.links = value;
 	}
 
 	setIsAuthenticated(value) {
 		this.isAuthenticated = value;
 	}
+  setCheckResult(value) {
+		this.checkResult = value;
+	}
 	setResponse(value) {
 		this.response = value;
 	}
+  setFiltersResponse(value) {
+		this.filtersResponse = value;
+	}
 
 	getHistoryAction = async () => {
-		try {
-      const result = await getHistory()
-      runInAction(() => {
-        this.links = result
-      })
-    }
-    catch{
-
-    }
+		await axios
+    .get(`${process.env.REACT_APP_URL_BACKEND}get_history_of_requests/`, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Token ${localStorage.getItem("authToken")}`,
+      },
+    })
+    .then((response) => {
+      // this.setLinks(JSON.parse(response.data) )
+      this.links = response.data
+      console.log('links: ' + store.links)
+      console.log('история запросов: ' + JSON.parse(response.data))
+      // return response.data
+    })
+    .catch((error) => {
+      // return error
+    });
 	};
 
   checkAuth = async () => {
 
     if(this.authToken) {
-      // Если есть токен, проверяем его на сервере
       await axios({
         method: "GET",
-        url: `${process.env.REACT_APP_URL_BACKEND}auth/users/me/`, // Замените на ваш URL для проверки авторизации
+        url: `${process.env.REACT_APP_URL_BACKEND}auth/users/me/`, 
         headers: {
           Authorization: `Token ${this.authToken}`,
         },
