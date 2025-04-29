@@ -1,21 +1,9 @@
-# Используем базовый образ Node.js
-FROM node:22-bullseye
+FROM nginx:stable-alpine
 
-# Устанавливаем рабочую директорию
-WORKDIR /usr/src/app
+COPY --from=build /app/build /usr/share/nginx/html
 
-# Копируем package.json и устанавливаем зависимости
-COPY package.json .
-COPY package-lock.json .
-RUN npm install
+COPY --from=build /app/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Копируем исходники и собираем проект
-COPY . .
-# RUN npm run build
+EXPOSE 80
 
-# Используем Nginx для раздачи статики
-# FROM nginx:latest
-# COPY --from=0 /app/build /usr/share/nginx/html
-EXPOSE 3000
-
-CMD ["npm", "start"]
+CMD ["nginx", "-g", "daemon off;"]

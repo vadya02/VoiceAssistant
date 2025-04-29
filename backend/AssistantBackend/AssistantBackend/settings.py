@@ -39,10 +39,11 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
 
 
 # Application definition
@@ -205,12 +206,14 @@ CORS_ALLOW_HEADERS = [
     "Access-Control-Allow-Headers",
     "Access-Control-Allow-Origin",
 ]
+
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 
 ]
+CORS_ORIGIN_ALLOW_ALL = True
 
 DB_NAME = env('POSTGRES_DB')
 USER = env('POSTGRES_USER')
@@ -231,6 +234,7 @@ class Word2VecModel:
 
     def load_model(self):
         current_directory = os.path.dirname(os.path.abspath(__file__))
+
 
         model_path = os.path.join(current_directory, 'model.bin')
         self.model = gensim.models.KeyedVectors.load_word2vec_format(model_path, binary=True)

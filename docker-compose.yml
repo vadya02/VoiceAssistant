@@ -1,6 +1,15 @@
-version: '3.8'
-
+version: "3.8"
 services:
+  nginx-react:
+    container_name: ngixreactapp
+    build:
+      context: ./frontend/assistant-frontend/
+
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+
+
   django:
     build:
       context: ./backend/AssistantBackend
@@ -27,10 +36,9 @@ services:
       - path_to_env
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    # env_file:
-    #   - ./.env.dev
+    command: python manage.py migrate
     ports:
-      - "5432:5432"
+      - 8000:8000
 
   pgadmin4:
     container_name: pgadmin4
